@@ -1,4 +1,4 @@
-package com.github.veselinazatchepina.smack
+package com.github.veselinazatchepina.smack.controller
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.github.veselinazatchepina.smack.R
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 

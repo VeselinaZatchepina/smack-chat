@@ -44,13 +44,62 @@ object MessageService {
 
             override fun getHeaders(): MutableMap<String, String> {
                 val headers = HashMap<String, String>()
-                headers.put("Authorization", "Bearer ${ App.sharedPrefs.authToken}")
+                headers.put("Authorization", "Bearer ${App.sharedPrefs.authToken}")
                 return headers
             }
         }
         App.sharedPrefs.requestQueue.add(channelsRequest)
     }
 
+    fun getMessages(channelId: String, complete: (Boolean) -> Unit) {
+        val url = "$URL_GET_CHANNELS$channelId"
+
+        val messagesRequest = object : JsonArrayRequest(Method.GET, url, null, Response.Listener {
+            clearMessages()
+            try {
+                for (x in 0 until it.length()) {
+                    val message = it.getJSONObject(x)
+                    val messageBody = message.getString("messageBody")
+                    val channelId = message.getString("channelId")
+                    val id = message.getString("_id")
+                    val userName = message.getString("userName")
+                    val userAvatar = message.getString("userAvatar")
+                    val userAvatarColor = message.getString("userAvatarColor")
+                    val timeStamp = message.getString("timeStamp")
+
+                    val newMessage = Message(messageBody, userName, channelId, userAvatar, userAvatarColor, id, timeStamp)
+                    this.messages.add(newMessage)
+                }
+                complete(true)
+            } catch (e: JSONException) {
+                Log.d("JSON", "EXC: " + e.localizedMessage)
+                complete(false)
+            }
+        }, Response.ErrorListener {
+            Log.d("ERROR", "Could not retrieve channels")
+            complete(false)
+        }) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+            override fun getHeaders(): MutableMap<String, String> {
+                val headers = HashMap<String, String>()
+                headers.put("Authorization", "Bearer ${App.sharedPrefs.authToken}")
+                return headers
+            }
+        }
+
+        App.sharedPrefs.requestQueue.add(messagesRequest)
+    }
+
+    fun clearMessages() {
+        messages.clear()
+    }
+
+    fun clearChannels() {
+        channels.clear()
+    }
 
 
 }
